@@ -1,29 +1,18 @@
 const router = require('express').Router();
-const { validateAgainstSchema, extractValidFields } = require('../lib/validation');
+const { ValidationError } = require('sequelize');
 
-const photos = require('../data/photos');
+const { Photo, PhotoClientFields } = require('../models/photo');
 
 exports.router = router;
 exports.photos = photos;
-
-/*
- * Schema describing required/optional fields of a photo object.
- */
-const photoSchema = {
-  userid: { required: true },
-  businessid: { required: true },
-  caption: { required: false }
-};
 
 
 /*
  * Route to create a new photo.
  */
-router.post('/', function (req, res, next) {
-  if (validateAgainstSchema(req.body, photoSchema)) {
-    const photo = extractValidFields(req.body, photoSchema);
-    photo.id = photos.length;
-    photos.push(photo);
+router.post('/', async function (req, res, next) {
+  try {
+    const photo = await Photo.create(req.body, PhotoClientFields);
     res.status(201).json({
       id: photo.id,
       links: {
@@ -31,59 +20,43 @@ router.post('/', function (req, res, next) {
         business: `/businesses/${photo.businessid}`
       }
     });
-  } else {
-    res.status(400).json({
-      error: "Request body is not a valid photo object"
-    });
+  } catch (err) {
+    if (err instanceof ValidationError) {
+      res.status(400).json({
+        error: "Request body is not a valid photo object"
+      });
+    } else {
+      next(err);
+    }
   }
 });
 
 /*
  * Route to fetch info about a specific photo.
  */
-router.get('/:photoID', function (req, res, next) {
-  const photoID = parseInt(req.params.photoID);
-  if (photos[photoID]) {
-    res.status(200).json(photos[photoID]);
+router.get('/:photoID', async function (req, res, next) {
+  const photoID = req.params.photoID;
+  const photo = await Photo.findByPk(photoID);
+  if (photo) {
+    res.status(200).json(photo);
   } else {
     next();
   }
 });
 
 /*
- * Route to update a photo.
+ * Route to update a photo. Used a patch to allow partial updates.
  */
-router.put('/:photoID', function (req, res, next) {
-  const photoID = parseInt(req.params.photoID);
-  if (photos[photoID]) {
-
-    if (validateAgainstSchema(req.body, photoSchema)) {
-      /*
-       * Make sure the updated photo has the same businessid and userid as
-       * the existing photo.
-       */
-      const updatedPhoto = extractValidFields(req.body, photoSchema);
-      const existingPhoto = photos[photoID];
-      if (existingPhoto && updatedPhoto.businessid === existingPhoto.businessid && updatedPhoto.userid === existingPhoto.userid) {
-        photos[photoID] = updatedPhoto;
-        photos[photoID].id = photoID;
-        res.status(200).json({
-          links: {
-            photo: `/photos/${photoID}`,
-            business: `/businesses/${updatedPhoto.businessid}`
-          }
-        });
-      } else {
-        res.status(403).json({
-          error: "Updated photo cannot modify businessid or userid"
-        });
-      }
-    } else {
-      res.status(400).json({
-        error: "Request body is not a valid photo object"
-      });
-    }
-
+router.patch('/:photoID', async function (req, res, next) {
+  const photoID = req.params.photoID;
+  const result = await Photo.update(req.body, {
+    where: {
+      id: photoID
+    },
+    fields: PhotoClientFields.filter(f => f !== 'businessid' && f !== 'userid')
+  });
+  if (result[0]) {
+    res.status(200).end();
   } else {
     next();
   }
@@ -92,12 +65,18 @@ router.put('/:photoID', function (req, res, next) {
 /*
  * Route to delete a photo.
  */
-router.delete('/:photoID', function (req, res, next) {
+router.delete('/:photoID', async function (req, res, next) {
   const photoID = parseInt(req.params.photoID);
-  if (photos[photoID]) {
-    photos[photoID] = null;
-    res.status(204).end();
+  const result = await Photo.destroy({
+    where: {
+      id: photoID
+    }
+  });
+  if (result) {
+    res.status(200).end();
   } else {
     next();
   }
 });
+
+module.exports = router;

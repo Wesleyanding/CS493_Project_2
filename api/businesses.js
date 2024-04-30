@@ -1,34 +1,17 @@
 const router = require('express').Router();
-const { validateAgainstSchema, extractValidFields } = require('../lib/validation');
+const { VaidationError } = require('sequelize');
 
-const businesses = require('../data/businesses');
-const { reviews } = require('./reviews');
-const { photos } = require('./photos');
+const { Business, BusinessClientFields } = require('../models/business');
+const { Review } = require('../models/review');
+const { Photo } = require('../models/photo');
 
 exports.router = router;
 exports.businesses = businesses;
 
 /*
- * Schema describing required/optional fields of a business object.
- */
-const businessSchema = {
-  ownerid: { required: true },
-  name: { required: true },
-  address: { required: true },
-  city: { required: true },
-  state: { required: true },
-  zip: { required: true },
-  phone: { required: true },
-  category: { required: true },
-  subcategory: { required: true },
-  website: { required: false },
-  email: { required: false }
-};
-
-/*
  * Route to return a list of businesses.
  */
-router.get('/', function (req, res) {
+router.get('/', async function (req, res) {
 
   /*
    * Compute page number based on optional query string parameter `page`.
@@ -46,8 +29,12 @@ router.get('/', function (req, res) {
    */
   const start = (page - 1) * numPerPage;
   const end = start + numPerPage;
-  const pageBusinesses = businesses.slice(start, end);
 
+  // Setting the result for the businesses
+  const  result = await Business.findAndCountAll({
+    limit: numPerPage,
+    offset: start
+  });
   /*
    * Generate HATEOAS links for surrounding pages.
    */
@@ -65,11 +52,11 @@ router.get('/', function (req, res) {
    * Construct and send response.
    */
   res.status(200).json({
-    businesses: pageBusinesses,
+    businesses: result.rows,
     pageNumber: page,
     totalPages: lastPage,
     pageSize: numPerPage,
-    totalCount: businesses.length,
+    totalCount: result.count,
     links: links
   });
 
@@ -78,67 +65,54 @@ router.get('/', function (req, res) {
 /*
  * Route to create a new business.
  */
-router.post('/', function (req, res, next) {
-  if (validateAgainstSchema(req.body, businessSchema)) {
-    const business = extractValidFields(req.body, businessSchema);
-    business.id = businesses.length;
-    businesses.push(business);
+router.post('/', async function (req, res, next) {
+  try {
+    const business = await Business.create(req.body, BusinessClientFields);
     res.status(201).json({
       id: business.id,
       links: {
         business: `/businesses/${business.id}`
       }
     });
-  } else {
-    res.status(400).json({
-      error: "Request body is not a valid business object"
-    });
+  } catch (err) {
+    if (err instanceof ValidationError) {
+      res.status(400).json({
+        error: "Request body is not a valid business object"
+      });
+    } else {
+      next(err);
+    }
   }
 });
 
 /*
  * Route to fetch info about a specific business.
  */
-router.get('/:businessid', function (req, res, next) {
-  const businessid = parseInt(req.params.businessid);
-  if (businesses[businessid]) {
-    /*
-     * Find all reviews and photos for the specified business and create a
-     * new object containing all of the business data, including reviews and
-     * photos.
-     */
-    const business = {
-      reviews: reviews.filter(review => review && review.businessid === businessid),
-      photos: photos.filter(photo => photo && photo.businessid === businessid)
-    };
-    Object.assign(business, businesses[businessid]);
+router.get('/:businessid', async function (req, res, next) {
+  const businessid = req.params.businessid;
+  const business = await Business.findByPk(businessid, {
+    include: [Review, Photo]
+  });
+  if (business) {
     res.status(200).json(business);
   } else {
     next();
-  }
+  } 
 });
 
 /*
  * Route to replace data for a business.
  */
-router.put('/:businessid', function (req, res, next) {
-  const businessid = parseInt(req.params.businessid);
-  if (businesses[businessid]) {
-
-    if (validateAgainstSchema(req.body, businessSchema)) {
-      businesses[businessid] = extractValidFields(req.body, businessSchema);
-      businesses[businessid].id = businessid;
-      res.status(200).json({
-        links: {
-          business: `/businesses/${businessid}`
-        }
-      });
-    } else {
-      res.status(400).json({
-        error: "Request body is not a valid business object"
-      });
-    }
-
+router.put('/:businessid', async function (req, res, next) {
+  const businessid = req.params.businessid;
+  const result = await Business.update(req.body, {
+    where: {
+      id: businessid
+    },
+    fields: BusinessClientFields
+  });
+  if (result[0]) {
+    res.status(200).end();
   } else {
     next();
   }
@@ -147,12 +121,18 @@ router.put('/:businessid', function (req, res, next) {
 /*
  * Route to delete a business.
  */
-router.delete('/:businessid', function (req, res, next) {
-  const businessid = parseInt(req.params.businessid);
-  if (businesses[businessid]) {
-    businesses[businessid] = null;
+router.delete('/:businessid', async function (req, res, next) {
+  const businessid = req.params.businessid;
+  const result = await Business.destroy({
+    where: {
+      id: businessid
+    }
+  });
+  if (result) {
     res.status(204).end();
   } else {
     next();
   }
 });
+
+module.exports = router;
