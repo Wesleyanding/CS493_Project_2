@@ -1,9 +1,8 @@
 const { DataTypes } = require('sequelize');
 
 const sequelize = require('../lib/sequelize');
-const { Review } = require('./review');
-const { Photo } = require('./photo');
-const e = require('express');
+const { Review } = require('./review.js');
+const { Photo } = require('./photo.js');
 
 const Business = sequelize.define('Business', {
     ownerid: { type: DataTypes.INTEGER, allowNull: false },

@@ -1,9 +1,9 @@
-const router = require('express').Router();
 const { ValidationError } = require('sequelize');
 
 const { Review, ReviewClientFields } = require('../models/review');
+const { Router } = require('express');
 
-exports.router = router;
+const router = Router();
 
 /*
  * Route to create a new review.

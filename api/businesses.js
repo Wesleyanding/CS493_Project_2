@@ -1,11 +1,11 @@
-const router = require('express').Router();
-const { VaidationError } = require('sequelize');
+const { Router } = require('express');
+const { ValidationError } = require('sequelize');
 
 const { Business, BusinessClientFields } = require('../models/business');
 const { Review } = require('../models/review');
 const { Photo } = require('../models/photo');
 
-exports.router = router;
+const router = Router();
 
 /*
  * Route to return a list of businesses.

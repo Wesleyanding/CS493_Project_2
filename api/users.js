@@ -1,6 +1,6 @@
-const router = require('express').Router();
+const { Router }= require('express');
 
-exports.router = router;
+const router = Router();
 
 const { Business } = require('../models/business');
 const { Review } = require('../models/review');

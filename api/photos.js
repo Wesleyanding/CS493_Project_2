@@ -1,9 +1,9 @@
-const router = require('express').Router();
+const { Router }= require('express');
 const { ValidationError } = require('sequelize');
 
 const { Photo, PhotoClientFields } = require('../models/photo');
 
-exports.router = router;
+const router = new Router();
 
 /*
  * Route to create a new photo.

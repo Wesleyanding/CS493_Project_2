@@ -21,7 +21,7 @@ services:
     depends_on:
       - db
     restart: on-failure
-    command: npm run initDB
+    command: npm run initdb
 
   api:
     build: .

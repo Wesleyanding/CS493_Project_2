@@ -1,4 +1,3 @@
-const sequelize = require('./lib/sequelize.js');
 const express = require('express');
 const morgan = require('morgan');
 
