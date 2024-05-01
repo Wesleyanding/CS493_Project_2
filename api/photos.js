@@ -4,8 +4,6 @@ const { ValidationError } = require('sequelize');
 const { Photo, PhotoClientFields } = require('../models/photo');
 
 exports.router = router;
-exports.photos = photos;
-
 
 /*
  * Route to create a new photo.

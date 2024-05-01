@@ -6,7 +6,7 @@ const { Photo } = require('./photo');
 const e = require('express');
 
 const Business = sequelize.define('Business', {
-    ownerid: { yppe: DataTypes.INTEGER, allowNull: false },
+    ownerid: { type: DataTypes.INTEGER, allowNull: false },
     name: { type: DataTypes.STRING, allowNull: false },
     address: { type: DataTypes.STRING, allowNull: false },
     city: { type: DataTypes.STRING, allowNull: false },

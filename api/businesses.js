@@ -6,7 +6,6 @@ const { Review } = require('../models/review');
 const { Photo } = require('../models/photo');
 
 exports.router = router;
-exports.businesses = businesses;
 
 /*
  * Route to return a list of businesses.

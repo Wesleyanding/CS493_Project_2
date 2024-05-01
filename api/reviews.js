@@ -4,8 +4,6 @@ const { ValidationError } = require('sequelize');
 const { Review, ReviewClientFields } = require('../models/review');
 
 exports.router = router;
-exports.reviews = reviews;
-
 
 /*
  * Route to create a new review.

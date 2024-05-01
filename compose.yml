@@ -1,7 +1,6 @@
-version: '3'
 services:
   db:
-    image: mysql:latest
+    image: mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
@@ -22,7 +21,7 @@ services:
     depends_on:
       - db
     restart: on-failure
-    command: npm run initdb
+    command: npm run initDB
 
   api:
     build: .
