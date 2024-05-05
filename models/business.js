@@ -5,7 +5,7 @@ const { Review } = require('./review.js');
 const { Photo } = require('./photo.js');
 
 const Business = sequelize.define('Business', {
-    ownerid: { type: DataTypes.INTEGER, allowNull: false },
+    ownerId: { type: DataTypes.INTEGER, allowNull: false },
     name: { type: DataTypes.STRING, allowNull: false },
     address: { type: DataTypes.STRING, allowNull: false },
     city: { type: DataTypes.STRING, allowNull: false },
@@ -28,7 +28,7 @@ Photo.belongsTo(Business);
 exports.Business = Business;
 
 exports.BusinessClientFields = [
-    'ownerid',
+    'ownerId',
     'name',
     'address',
     'city',

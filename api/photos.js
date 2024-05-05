@@ -32,9 +32,9 @@ router.post('/', async function (req, res, next) {
 /*
  * Route to fetch info about a specific photo.
  */
-router.get('/:photoID', async function (req, res, next) {
-  const photoID = req.params.photoID;
-  const photo = await Photo.findByPk(photoID);
+router.get('/:photoId', async function (req, res, next) {
+  const photoId = req.params.photoId;
+  const photo = await Photo.findByPk(photoId);
   if (photo) {
     res.status(200).json(photo);
   } else {
@@ -45,16 +45,16 @@ router.get('/:photoID', async function (req, res, next) {
 /*
  * Route to update a photo. Used a patch to allow partial updates.
  */
-router.patch('/:photoID', async function (req, res, next) {
-  const photoID = req.params.photoID;
+router.patch('/:photoId', async function (req, res, next) {
+  const photoId = req.params.photoID;
   const result = await Photo.update(req.body, {
     where: {
-      id: photoID
+      id: photoId
     },
-    fields: PhotoClientFields.filter(f => f !== 'businessid' && f !== 'userid')
+    fields: PhotoClientFields.filter(f => f !== 'businessId' && f !== 'userId')
   });
-  if (result[0]) {
-    res.status(200).end();
+  if (result[0] > 0) {
+    res.status(204).send();
   } else {
     next();
   }
@@ -63,11 +63,11 @@ router.patch('/:photoID', async function (req, res, next) {
 /*
  * Route to delete a photo.
  */
-router.delete('/:photoID', async function (req, res, next) {
-  const photoID = parseInt(req.params.photoID);
+router.delete('/:photoId', async function (req, res, next) {
+  const photoId = parseInt(req.params.photoId);
   const result = await Photo.destroy({
     where: {
-      id: photoID
+      id: photoId
     }
   });
   if (result) {

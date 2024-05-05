@@ -15,7 +15,7 @@ router.post('/', async function (req, res, next) {
       id: review.id,
       links: {
         review: `/reviews/${review.id}`,
-        business: `/businesses/${review.businessid}`
+        business: `/businesses/${review.businessId}`,
       }
     });
   } catch (err) {
@@ -32,9 +32,9 @@ router.post('/', async function (req, res, next) {
 /*
  * Route to fetch info about a specific review.
  */
-router.get('/:reviewID', async function (req, res, next) {
-  const reviewID = req.params.reviewID;
-  const review = await Review.findByPk(reviewID);
+router.get('/:reviewId', async function (req, res, next) {
+  const reviewId = req.params.reviewId;
+  const review = await Review.findByPk(reviewId);
   if (review) {
     res.status(200).json(review);
   } else {
@@ -45,16 +45,16 @@ router.get('/:reviewID', async function (req, res, next) {
 /*
  * Route to update a review.
  */
-router.patch('/:reviewID', async function (req, res, next) {
-  const reviewID = req.params.reviewID;
+router.patch('/:reviewId', async function (req, res, next) {
+  const reviewId = req.params.reviewId;
   const result = await Review.update(req.body, {
     where: {
-      id: reviewID
+      id: reviewId
     },
-    fields: ReviewClientFields.filter(f => f !== 'businessid' && f !== 'userid')
+    fields: ReviewClientFields.filter(f => f !== 'businessId' && f !== 'userId')
   });
-  if (result[0]) {
-    res.status(200).end();
+  if (result[0] > 0) {
+    res.status(200).send();
   } else {
     next();
   }
@@ -63,15 +63,15 @@ router.patch('/:reviewID', async function (req, res, next) {
 /*
  * Route to delete a review.
  */
-router.delete('/:reviewID', async function (req, res, next) {
-  const reviewID = parseInt(req.params.reviewID);
+router.delete('/:reviewId', async function (req, res, next) {
+  const reviewId = parseInt(req.params.reviewId);
   const result = await Review.destroy({
     where: {
-      id: reviewID
+      id: reviewId
     }
   });
-  if (result) {
-    res.status(200).end();
+  if (result > 0) {
+    res.status(200).send();
   } else {
     next();
   }

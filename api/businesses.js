@@ -87,9 +87,9 @@ router.post('/', async function (req, res, next) {
 /*
  * Route to fetch info about a specific business.
  */
-router.get('/:businessid', async function (req, res, next) {
-  const businessid = req.params.businessid;
-  const business = await Business.findByPk(businessid, {
+router.get('/:businessId', async function (req, res, next) {
+  const businessId = req.params.businessId;
+  const business = await Business.findByPk(businessId, {
     include: [Review, Photo]
   });
   if (business) {
@@ -102,16 +102,16 @@ router.get('/:businessid', async function (req, res, next) {
 /*
  * Route to replace data for a business.
  */
-router.put('/:businessid', async function (req, res, next) {
-  const businessid = req.params.businessid;
+router.put('/:businessId', async function (req, res, next) {
+  const businessId = req.params.businessId;
   const result = await Business.update(req.body, {
     where: {
-      id: businessid
+      id: businessId
     },
     fields: BusinessClientFields
   });
-  if (result[0]) {
-    res.status(200).end();
+  if (result[0] > 0) {
+    res.status(204).send();
   } else {
     next();
   }
@@ -120,15 +120,15 @@ router.put('/:businessid', async function (req, res, next) {
 /*
  * Route to delete a business.
  */
-router.delete('/:businessid', async function (req, res, next) {
-  const businessid = req.params.businessid;
+router.delete('/:businessId', async function (req, res, next) {
+  const businessId = req.params.businessId;
   const result = await Business.destroy({
     where: {
-      id: businessid
+      id: businessId
     }
   });
-  if (result) {
-    res.status(204).end();
+  if (result > 0) {
+    res.status(204).send();
   } else {
     next();
   }
