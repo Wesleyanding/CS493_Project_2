@@ -5,7 +5,8 @@ const { Review } = require('./review.js');
 const { Photo } = require('./photo.js');
 
 const Business = sequelize.define('Business', {
-    ownerId: { type: DataTypes.INTEGER, allowNull: false },
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    ownerid: { type: DataTypes.INTEGER, allowNull: false },
     name: { type: DataTypes.STRING, allowNull: false },
     address: { type: DataTypes.STRING, allowNull: false },
     city: { type: DataTypes.STRING, allowNull: false },
@@ -28,7 +29,8 @@ Photo.belongsTo(Business);
 exports.Business = Business;
 
 exports.BusinessClientFields = [
-    'ownerId',
+    'id',
+    'ownerid',
     'name',
     'address',
     'city',
