@@ -5,7 +5,6 @@ const { Review } = require('./review.js');
 const { Photo } = require('./photo.js');
 
 const Business = sequelize.define('Business', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     ownerid: { type: DataTypes.INTEGER, allowNull: false },
     name: { type: DataTypes.STRING, allowNull: false },
     address: { type: DataTypes.STRING, allowNull: false },
@@ -20,16 +19,15 @@ const Business = sequelize.define('Business', {
 });
 
 // Define relationships between models
-Business.hasMany(Review, { foreignKey: { allowNull: false } });
-Review.belongsTo(Business);
+Business.hasMany(Review, { foreignKey: 'businessId', allowNull: false });
+Review.belongsTo(Business, { foreignKey: 'businessId' });
 
-Business.hasMany(Photo, { foreignKey: { allowNull: false } });
-Photo.belongsTo(Business);
+Business.hasMany(Photo, { foreignKey: 'businessId', allowNull: false });
+Photo.belongsTo(Business, { foreignKey: 'businessId' });
 
 exports.Business = Business;
 
 exports.BusinessClientFields = [
-    'id',
     'ownerid',
     'name',
     'address',

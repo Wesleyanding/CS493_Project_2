@@ -1,6 +1,5 @@
 [
   {
-    "id": 0,
     "userid": 7,
     "businessid": 8,
     "dollars": 1,
@@ -8,7 +7,6 @@
     "review": "Cheap, delicious food."
   },
   {
-    "id": 1,
     "userid": 25,
     "businessid": 2,
     "dollars": 1,
@@ -16,7 +14,6 @@
     "review": "How many fasteners can one room hold?"
   },
   {
-    "id": 2,
     "userid": 26,
     "businessid": 1,
     "dollars": 1,
@@ -24,14 +21,12 @@
     "review": "Joel, the owner, is super friendly and helpful."
   },
   {
-    "id": 3,
     "userid": 21,
     "businessid": 14,
     "dollars": 2,
     "stars": 4
   },
   {
-    "id": 4,
     "userid": 28,
     "businessid": 18,
     "dollars": 1,
@@ -39,7 +34,6 @@
     "review": "Good beer, good food, though limited selection."
   },
   {
-    "id": 5,
     "userid": 21,
     "businessid": 9,
     "dollars": 1,
@@ -47,7 +41,6 @@
     "review": "A Corvallis gem."
   },
   {
-    "id": 6,
     "userid": 26,
     "businessid": 8,
     "dollars": 1,
@@ -55,21 +48,18 @@
     "review": "Yummmmmmm!"
   },
   {
-    "id": 7,
     "userid": 25,
     "businessid": 18,
     "dollars": 2,
     "stars": 4.5
   },
   {
-    "id": 8,
     "userid": 20,
     "businessid": 2,
     "dollars": 2,
     "stars": 4
   },
   {
-    "id": 9,
     "userid": 6,
     "businessid": 15,
     "dollars": 2,

@@ -13,31 +13,29 @@ const router = Router();
 router.get('/', async function (req, res) {
 
   /*
-   * Compute page number based on optional query string parameter `page`.
-   * Make sure page is within allowed bounds.
-   */
-  let page = parseInt(req.query.page) || 1;
-  const numPerPage = 10;
-  const lastPage = Math.ceil(businesses.length / numPerPage);
-  page = page > lastPage ? lastPage : page;
-  page = page < 1 ? 1 : page;
-
-  /*
-   * Calculate starting and ending indices of businesses on requested page and
-   * slice out the corresponsing sub-array of busibesses.
-   */
-  const start = (page - 1) * numPerPage;
-  const end = start + numPerPage;
-
-  // Setting the result for the businesses
-  const  result = await Business.findAndCountAll({
-    limit: numPerPage,
-    offset: start
-  });
-  /*
-   * Generate HATEOAS links for surrounding pages.
-   */
-  const links = {};
+  * Compute page number based on optional query string parameter `page`.
+  * Make sure page is within allowed bounds.
+  */
+ let page = parseInt(req.query.page) || 1;
+ const numPerPage = 10;
+ page = page < 1 ? 1 : page;
+ 
+ const start = (page - 1) * numPerPage;
+ // Setting the result for the businesses
+ const  result = await Business.findAndCountAll({
+   limit: numPerPage,
+   offset: start
+ });
+ /*
+ * Calculate starting and ending indices of businesses on requested page and
+  * slice out the corresponsing sub-array of busibesses.
+  */
+ 
+ /*
+ * Generate HATEOAS links for surrounding pages.
+ */
+const lastPage = Math.ceil(result.count / numPerPage);
+const links = {};
   if (page < lastPage) {
     links.nextPage = `/businesses?page=${page + 1}`;
     links.lastPage = `/businesses?page=${lastPage}`;
